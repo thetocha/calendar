@@ -27,7 +27,7 @@ def simple_get():
 def create_user(user: schemas.User, db: Session = Depends(get_db)):
     db_user = work.get_user(db, user_id=user.id)
     if db_user:
-        raise HTTPException(status_code=400, detail="Email already registered")
+        raise HTTPException(status_code=400, detail="Login already registered")
     return work.create_user(db=db, user=user)
 
 
