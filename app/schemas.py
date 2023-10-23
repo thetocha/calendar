@@ -1,13 +1,16 @@
-# from pydantic import BaseModel
-#
-#
-# class UserBase(BaseModel):
-#     Name: str
-#
-#
-# class User(UserBase):
-#     Age: int
-#     id: int
-#
-#     class Config:
-#         orm_mode = True
+from pydantic import BaseModel
+
+
+class UserBase(BaseModel):
+    Name: str
+    LastName: str
+
+
+class User(UserBase):
+    login: str
+    id: int
+    password: int
+    group: int
+
+    class Config:
+        orm_mode = True
