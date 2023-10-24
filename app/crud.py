@@ -12,9 +12,8 @@ def get_users(db: Session, skip: int = 0, limit: int = 100):
 
 
 def create_user(db: Session, user: schemas.User):
-    db_user = models.User(Name=user.Name, LastName=user.LastName, group=user.group,
-                          password=user.password, login=user.login)
+    db_user = models.User(Name=user.name, LastName=user.last_name, group=user.group,
+                          password=user.password, login=user.user_name)
     db.add(db_user)
     db.commit()
-    db.refresh(db_user)
     return db_user

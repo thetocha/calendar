@@ -2,12 +2,12 @@ from pydantic import BaseModel
 
 
 class UserBase(BaseModel):
-    Name: str
-    LastName: str
+    name: str
+    last_name: str
 
 
 class User(UserBase):
-    login: str
+    user_name: str
     id: int
     password: int
     group: int
