@@ -3,8 +3,8 @@ from sqlalchemy.orm import Session
 from app.users import models, schemas
 
 
-def get_user(db: Session, user_id: int):
-    return db.query(models.User).filter(models.User.id == user_id).first()
+def get_user(db: Session, user_name: str):
+    return db.query(models.User).filter(models.User.user_name == user_name).first()
 
 
 def get_users(db: Session, skip: int = 0, limit: int = 100):
