@@ -3,12 +3,12 @@ from uuid import UUID
 
 
 class UserBase(BaseModel):
-    name: str
+    first_name: str
     last_name: str
 
 
 class GetUser(UserBase):
-    user_name: str
+    username: str
     id: UUID
     group: int
 
@@ -17,8 +17,8 @@ class GetUser(UserBase):
 
 
 class CreateUser(UserBase):
-    user_name: str
-    password: int
+    username: str
+    password: str
     group: int
 
     class Config:

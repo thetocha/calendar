@@ -1,9 +1,9 @@
-from fastapi import FastAPI, Depends
-from .users import user_router
+from fastapi import FastAPI
+from .users.user_router import router
 
 app = FastAPI()
 
-app.include_router(user_router.router)
+app.include_router(router)
 
 
 @app.get("/")
