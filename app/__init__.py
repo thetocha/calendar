@@ -1,3 +1,3 @@
 # import model for alembic
 
-from .users.models import User
+from app.users.models import User
