@@ -1,4 +1,4 @@
-from pydantic_settings import BaseSettings, SettingsConfigDict
+from pydantic_settings import BaseSettings
 
 
 class DbSettings(BaseSettings):
@@ -8,24 +8,11 @@ class DbSettings(BaseSettings):
     db_user: str
     db_pass: int
 
-    model_config = SettingsConfigDict()
+    @property
+    def db_url(self):
+        return f"""postgresql://{self.db_user}:{self.db_pass}@{self.db_host}:
+                                               {self.db_port}/{self.db_name}"""
 
 
 class AppSettings(BaseSettings):
     app_port: int
-
-    model_config = SettingsConfigDict()
-
-
-class PgAdminSettings(BaseSettings):
-    pgadmin_email: str
-    pgadmin_password: str
-    pgadmin_port: int
-
-    model_config = SettingsConfigDict()
-
-
-db_settings = DbSettings()
-
-SQLALCHEMY_DATABASE_URL = f"""postgresql://{db_settings.db_user}:{db_settings.db_pass}@{db_settings.db_host}:
-                                           {db_settings.db_port}/{db_settings.db_name}"""

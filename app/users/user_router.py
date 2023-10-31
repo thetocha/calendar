@@ -10,7 +10,7 @@ router = APIRouter()
 
 @router.post("/users/", response_model=CreateUser)
 def create_user(user: CreateUser, session: Session = Depends(get_session)):
-    db_user = crud.get_user(session=session, user_name=user.username)
+    db_user = crud.get_user(session=session, username=user.username)
     if db_user:
         raise HTTPException(status_code=400, detail="User already registered")
     return crud.create_user(user=user, session=session)
@@ -22,9 +22,9 @@ def read_users(session: Session = Depends(get_session), skip: int = 0, limit: in
     return users
 
 
-@router.get("/users/{user_name}", response_model=GetUser)
-def read_user(user_name: str, session: Session = Depends(get_session)):
-    db_user = crud.get_user(user_name=user_name, session=session)
+@router.get("/users/{username}", response_model=GetUser)
+def read_user(username: str, session: Session = Depends(get_session)):
+    db_user = crud.get_user(username=username, session=session)
     if db_user is None:
         raise HTTPException(status_code=404, detail="User not found")
     return db_user

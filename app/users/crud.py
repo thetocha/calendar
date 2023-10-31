@@ -3,8 +3,8 @@ from app.users.models import User
 from app.users.schemas import CreateUser
 
 
-def get_user(user_name: str, session: Session):
-    return session.query(User).filter(User.username == user_name).first()
+def get_user(username: str, session: Session):
+    return session.query(User).filter(User.username == username).first()
 
 
 def get_users(session: Session, skip: int = 0, limit: int = 100):
