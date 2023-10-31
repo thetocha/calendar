@@ -1,12 +1,17 @@
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
+from config import DbSettings
 
-SQLALCHEMY_DATABASE_URL = "postgresql://postgres:1234@postgres_c:5432/postgres"
-
-engine = create_engine(
-    SQLALCHEMY_DATABASE_URL
-)
+engine = create_engine(DbSettings().db_url)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 Base = declarative_base()
+
+
+def get_session():
+    session = SessionLocal()
+    try:
+        yield session
+    finally:
+        session.close()

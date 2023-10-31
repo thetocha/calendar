@@ -3,30 +3,39 @@ version: "3.9"
 services:
   db:
      image: postgres:16
-     container_name: postgres_c
+     container_name: db_server
      restart: always
-     environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=1234
-      - POSTGRES_HOST=host
-      - POSTGRES_DB=postgres
+     env_file:
+       - .env
      ports:
-       - "5432:5432"
+       - "${DB_PORT}:${APP_PORT}"
      volumes:
         - ./data:/var/lib/postgresql/data
 
   app:
+      command:
+        bash -c "uvicorn app.main:app --host 0.0.0.0 --port 8033"
       build:
         context: .
         dockerfile: Dockerfile
       container_name: fastapi
+      env_file:
+        - .env
       restart: always
       ports:
-          - "8033:8033"
+          - "${APP_PORT}:${APP_PORT}"
       depends_on:
           - db
-      volumes:
-          - .:/app
+
+  pgadmin:
+    container_name: pgadmin
+    image: dpage/pgadmin4
+    env_file:
+      - .env
+    ports:
+      - "${PGADMIN_PORT}:${PGADMIN_CONTAINER_PORT}"
+    depends_on:
+      - db
 
 
 networks:
