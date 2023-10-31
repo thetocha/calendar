@@ -8,20 +8,22 @@ services:
      env_file:
        - .env
      ports:
-       - "${DB_PORT}:5432"
+       - "${DB_PORT}:${APP_PORT}"
      volumes:
         - ./data:/var/lib/postgresql/data
 
   app:
+      command:
+        bash -c "uvicorn app.main:app --host 0.0.0.0 --port 8033"
       build:
         context: .
-        dockerfile: app/Dockerfile
+        dockerfile: Dockerfile
       container_name: fastapi
       env_file:
         - .env
       restart: always
       ports:
-          - "${APP_PORT}:8033"
+          - "${APP_PORT}:${APP_PORT}"
       depends_on:
           - db
 
@@ -31,7 +33,7 @@ services:
     env_file:
       - .env
     ports:
-      - "${PGADMIN_PORT}:80"
+      - "${PGADMIN_PORT}:${PGADMIN_CONTAINER_PORT}"
     depends_on:
       - db
 

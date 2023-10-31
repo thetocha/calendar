@@ -8,13 +8,13 @@ class DbSettings(BaseSettings):
     db_user: str
     db_pass: int
 
-    model_config = SettingsConfigDict(env_file="../.env")
+    model_config = SettingsConfigDict()
 
 
 class AppSettings(BaseSettings):
     app_port: int
 
-    model_config = SettingsConfigDict(env_file="../.env")
+    model_config = SettingsConfigDict()
 
 
 class PgAdminSettings(BaseSettings):
@@ -22,7 +22,7 @@ class PgAdminSettings(BaseSettings):
     pgadmin_password: str
     pgadmin_port: int
 
-    model_config = SettingsConfigDict(env_file="../.env")
+    model_config = SettingsConfigDict()
 
 
 db_settings = DbSettings()

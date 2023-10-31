@@ -1,19 +1,20 @@
-from sqlalchemy.orm import Session
+from fastapi import Depends
 
-from .models import User
-from .schemas import CreateUser
-
-
-def get_user(db: Session, user_name: str):
-    return db.query(User).filter(User.username == user_name).first()
+from app.database import get_session
+from app.users.models import User
+from app.users.schemas import CreateUser
 
 
-def get_users(db: Session, skip: int = 0, limit: int = 100):
-    return db.query(User).offset(skip).limit(limit).all()
+def get_user(user_name: str, session: Depends(get_session)):
+    return session.query(User).filter(User.username == user_name).first()
 
 
-def create_user(db: Session, user: CreateUser):
-    db_user = User(**user.dict())
-    db.add(db_user)
-    db.commit()
-    return db_user
+def get_users(session: Depends(get_session), skip: int = 0, limit: int = 100):
+    return session.query(User).offset(skip).limit(limit).all()
+
+
+def create_user(user: CreateUser, session: Depends(get_session)):
+    user_to_add = User(**user.dict())
+    session.add(user_to_add)
+    session.commit()
+    return user_to_add
