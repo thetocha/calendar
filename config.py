@@ -16,3 +16,9 @@ class DbSettings(BaseSettings):
 
 class AppSettings(BaseSettings):
     app_port: int
+
+
+class JWTSettings(BaseSettings):
+    secret_key: str
+    algorithm: str
+    access_token_expire_minutes: int

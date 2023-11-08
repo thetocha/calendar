@@ -1,6 +1,7 @@
 import uuid
 
-from sqlalchemy import Column, Integer, String
+from sqlalchemy import Column, Integer, String, ForeignKey
+from sqlalchemy.orm import relationship
 from sqlalchemy.dialects.postgresql import UUID
 
 from app.database import Base
@@ -15,3 +16,16 @@ class User(Base):
     username = Column(String(100), nullable=False, unique=True)
     password = Column(String(20), nullable=False)
     group = Column(Integer, nullable=False)
+    role_id = Column(Integer, ForeignKey("roles.id"))
+
+    roles = relationship("Role", back_populates="roles")
+
+
+class Role(Base):
+    __tablename__ = "roles"
+    id = Column(Integer, primary_key=True, index=True)
+    role_name = Column(String(20), nullable=False)
+
+    users = relationship("User", back_populates="roles")
+
+
