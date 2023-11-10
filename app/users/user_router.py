@@ -4,6 +4,7 @@ from sqlalchemy.orm import Session
 
 from app.users import crud
 from app.users.schemas import CreateUser, GetUser
+from app.auth.password_handler import get_hashed_password
 
 user_router = APIRouter(tags=["User"])
 
@@ -13,6 +14,7 @@ def create_user(user: CreateUser, session: Session = Depends(get_session)):
     db_user = crud.get_user(session=session, username=user.username)
     if db_user:
         raise HTTPException(status_code=400, detail="User already registered")
+    user.password = get_hashed_password(user.password)
     return crud.create_user(user=user, session=session)
 
 

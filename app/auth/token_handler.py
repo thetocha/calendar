@@ -10,21 +10,22 @@ from app.database import get_session
 from app.users.crud import get_user
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl='/login')
+jwt_settings = JWTSettings()
 
 
 def create_access_token(data: dict):
     to_encode = data.copy()
-    expire = datetime.utcnow() + timedelta(minutes=JWTSettings.access_token_expire_minutes)
+    expire = datetime.utcnow() + timedelta(minutes=jwt_settings.get_minutes)
     to_encode.update({"expire": expire.strftime("%Y-%m-%d %H:%M:%S")})
 
-    encoded_jwt = jwt.encode(to_encode, JWTSettings.secret_key, JWTSettings.algorithm)
+    encoded_jwt = jwt.encode(to_encode, jwt_settings.get_key, jwt_settings.get_algorithm)
 
     return encoded_jwt
 
 
 def verify_token_access(token: str, credentials_exception):
     try:
-        payload = jwt.decode(token, JWTSettings.secret_key, JWTSettings.algorithm)
+        payload = jwt.decode(token, jwt_settings.get_key, jwt_settings.get_algorithm)
         username: str = payload.get("username")
 
         if username is None:

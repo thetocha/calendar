@@ -21,9 +21,12 @@ def create_user(user: CreateUser, session: Session):
 
 
 def update_user(user: CreateUser, session: Session, id_to_update: UUID):
-    user_to_update = session.query(User).filter(User.id == id_to_update).first()
+    update_query = session.query(User).filter(User.id == id_to_update)
+    user_to_update = update_query.first()
     if user_to_update is None:
         return None
-    user_to_update.update(**user.dict())
+    info = {"id": user_to_update.id}
+    info.update(**user.dict())
+    update_query.update(info)
     session.commit()
     return user_to_update

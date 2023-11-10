@@ -9,6 +9,7 @@ from app.auth.token_handler import create_access_token
 from app.auth.token_handler import get_current_user
 from app.auth.schemas import Token
 from app.users.schemas import GetUser, CreateUser
+from app.auth.password_handler import get_hashed_password
 
 auth_router = APIRouter(tags=["authentication"])
 
@@ -31,13 +32,19 @@ def sing_up(user_details: CreateUser, session: Session = Depends(get_session)):
 
     if user:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="User already registered")
-    create_user(user, session)
-    access_token = create_access_token(data={"username": user.username})
+    create_user(user_details, session)
+    access_token = create_access_token(data={"username": user_details.username})
     return {"access_token": access_token, "token_type": "bearer"}
 
 
 @auth_router.put('/me', response_model=CreateUser)
-def get_me(user_details: CreateUser, user: GetUser = Depends(get_current_user),
-           session: Session = Depends(get_session)):
+def update_me(user_details: CreateUser, user: GetUser = Depends(get_current_user),
+              session: Session = Depends(get_session)):
+    user_details.password = get_hashed_password(user_details.password)
     update_user(user=user_details, session=session, id_to_update=user.id)
+    return user
+
+
+@auth_router.get('/me_info', response_model=GetUser)
+def get_me(user: GetUser = Depends(get_current_user)):
     return user

@@ -7,7 +7,6 @@ class UserBase(BaseModel):
     last_name: str
     username: str
     group: int
-    role: str
 
 
 class GetUser(UserBase):
