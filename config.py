@@ -34,3 +34,6 @@ class JWTSettings(BaseSettings):
     @property
     def get_key(self):
         return self.secret_key
+
+
+db_settings = DbSettings()

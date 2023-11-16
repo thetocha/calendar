@@ -5,8 +5,12 @@ from app.users.schemas import CreateUser
 from uuid import UUID
 
 
-def get_user(username: str, session: Session):
+def get_user_by_username(username: str, session: Session):
     return session.query(User).filter(User.username == username).first()
+
+
+def get_user(user_id: UUID, session: Session):
+    return session.query(User).filter(User.id == user_id).first()
 
 
 def get_users(session: Session, skip: int = 0, limit: int = 100):

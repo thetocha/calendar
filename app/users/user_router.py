@@ -11,7 +11,7 @@ user_router = APIRouter(tags=["User"])
 
 @user_router.post("/users/", response_model=CreateUser)
 def create_user(user: CreateUser, session: Session = Depends(get_session)):
-    db_user = crud.get_user(session=session, username=user.username)
+    db_user = crud.get_user_by_username(session=session, username=user.username)
     if db_user:
         raise HTTPException(status_code=400, detail="User already registered")
     user.password = get_hashed_password(user.password)
@@ -26,7 +26,7 @@ def read_users(session: Session = Depends(get_session), skip: int = 0, limit: in
 
 @user_router.get("/users/{username}", response_model=GetUser)
 def read_user(username: str, session: Session = Depends(get_session)):
-    db_user = crud.get_user(username=username, session=session)
+    db_user = crud.get_user_by_username(username=username, session=session)
     if db_user is None:
         raise HTTPException(status_code=404, detail="User not found")
     return db_user

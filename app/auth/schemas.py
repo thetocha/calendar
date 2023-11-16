@@ -1,4 +1,5 @@
 from pydantic import BaseModel
+from uuid import UUID
 
 
 class UserLogin(BaseModel):
@@ -12,4 +13,4 @@ class Token(BaseModel):
 
 
 class TokenData(BaseModel):
-    username: str
+    user_id: UUID
