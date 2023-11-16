@@ -5,28 +5,27 @@ from sqlalchemy.orm import Session
 from jose import jwt, JWTError
 from uuid import UUID
 
-from config import JWTSettings
+from config import jwt_settings
 from app.auth.schemas import TokenData
 from app.database import get_session
 from app.users.crud import get_user
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl='/login')
-jwt_settings = JWTSettings()
 
 
 def create_access_token(data: dict):
     to_encode = data.copy()
-    expire = datetime.utcnow() + timedelta(minutes=jwt_settings.get_minutes)
+    expire = datetime.utcnow() + timedelta(minutes=jwt_settings.access_token_expire_minutes)
     to_encode.update({"expire": expire.strftime("%Y-%m-%d %H:%M:%S")})
 
-    encoded_jwt = jwt.encode(to_encode, jwt_settings.get_key, jwt_settings.get_algorithm)
+    encoded_jwt = jwt.encode(to_encode, jwt_settings.secret_key, jwt_settings.algorithm)
 
     return encoded_jwt
 
 
 def verify_token_access(token: str, credentials_exception):
     try:
-        payload = jwt.decode(token, jwt_settings.get_key, jwt_settings.get_algorithm)
+        payload = jwt.decode(token, jwt_settings.secret_key, jwt_settings.algorithm)
         user_id: UUID = payload.get("user_id")
 
         if user_id is None:
