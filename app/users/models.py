@@ -13,5 +13,5 @@ class User(Base):
     first_name = Column(String(100))
     last_name = Column(String(100), nullable=False)
     username = Column(String(100), nullable=False, unique=True)
-    password = Column(String(20), nullable=False)
+    password = Column(String(1000), nullable=False)
     group = Column(Integer, nullable=False)
