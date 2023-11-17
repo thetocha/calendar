@@ -32,6 +32,7 @@ def sign_up(user_details: CreateUser, session: Session = Depends(get_session)):
 
     if user:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="User already registered")
+    user_details.password = get_hashed_password(user_details.password)
     added_user = create_user(user_details, session)
     access_token = create_access_token(data={"user_id": str(added_user.id)})
     return {"access_token": access_token, "token_type": "bearer"}
