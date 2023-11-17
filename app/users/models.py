@@ -33,7 +33,7 @@ class WeekEnum(Enum):
 class User(Base):
     __tablename__ = "users"
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4(), index=True)
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, index=True)
     first_name = Column(String(100))
     last_name = Column(String(100), nullable=False)
     username = Column(String(100), nullable=False, unique=True)
@@ -91,7 +91,7 @@ class UserGroupRole(Base):
 class Group(Base):
     __tablename__ = "groups"
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4(), index=True)
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, index=True)
     number = Column(Integer, nullable=False)
     course = Column(ENUM(CourseEnum), nullable=False)
 
@@ -102,7 +102,7 @@ class Group(Base):
 class Event(Base):
     __tablename__ = "events"
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4(), index=True)
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, index=True)
     professor = Column(String(30))
     place = Column(String(20))
     week = Column(ENUM(WeekEnum), nullable=False)
@@ -114,7 +114,7 @@ class Event(Base):
 class Attendance(Base):
     __tablename__ = "attendance"
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4(), index=True)
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, index=True)
     user = Column(UUID, ForeignKey("users.id"))
     event = Column(UUID, ForeignKey("events.id"))
     attended = Column(Boolean)
@@ -127,7 +127,7 @@ class Attendance(Base):
 class EventGroup(Base):
     __tablename__ = "event_groups"
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4(), index=True)
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, index=True)
     group = Column(UUID, ForeignKey("groups.id"))
     event = Column(UUID, ForeignKey("events.id"))
 
@@ -145,7 +145,7 @@ class StatusEnum(Enum):
 class Notification(Base):
     __tablename__ = "notifications"
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4(), index=True)
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, index=True)
     text = Column(String(1000), nullable=False)
     creation_date = Column(DateTime, nullable=False)
     status = Column(ENUM(StatusEnum), nullable=False)
