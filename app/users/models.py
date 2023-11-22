@@ -38,12 +38,11 @@ class User(Base):
     last_name = Column(String(100), nullable=False)
     username = Column(String(100), nullable=False, unique=True)
     password = Column(String(1000), nullable=False)
-    group_role = Column(Integer, ForeignKey("user_group_roles.id"))
-    user_role = Column(Integer, ForeignKey("user_roles.id"))
 
-    user_roles = relationship("UserRole", back_populates="users")
+    user_roles = relationship("UserRole", back_populates="general_users")
     user_group_roles = relationship("UserGroupRole", back_populates="users")
     notifications = relationship("Notification", back_populates="users")
+    attendance = relationship("Attendance", back_populates="users")
 
 
 class Role(Base):
@@ -52,7 +51,7 @@ class Role(Base):
     id = Column(Integer, primary_key=True, index=True)
     role_name = Column(String(20), nullable=False)
 
-    user_roles = relationship("User", back_populates="roles")
+    user_roles = relationship("UserRole", back_populates="roles")
 
 
 class UserRole(Base):
@@ -62,8 +61,8 @@ class UserRole(Base):
     user_id = Column(UUID, ForeignKey("users.id"))
     role_id = Column(Integer, ForeignKey("roles.id"))
 
-    users = relationship("User", back_populates="user_roles")
-    roles = relationship("Role", back_populates="user_roles")
+    general_users = relationship("User", back_populates="user_roles", foreign_keys="UserRole.user_id")
+    roles = relationship("Role", back_populates="user_roles", foreign_keys="UserRole.role_id")
 
 
 class GroupRole(Base):
@@ -83,9 +82,9 @@ class UserGroupRole(Base):
     group_id = Column(UUID, ForeignKey("groups.id"))
     role_id = Column(Integer, ForeignKey("group_roles.id"))
 
-    groups = relationship("Group", back_populates="group_roles")
-    group_roles = relationship("GroupRole", back_populates="user_group_roles")
-    users = relationship("User", back_populates="user_group_roles")
+    groups = relationship("Group", back_populates="group_roles", foreign_keys="UserGroupRole.group_id")
+    group_roles = relationship("GroupRole", back_populates="user_group_roles", foreign_keys="UserGroupRole.role_id")
+    users = relationship("User", back_populates="user_group_roles", foreign_keys="UserGroupRole.user_id")
 
 
 class Group(Base):
@@ -109,6 +108,7 @@ class Event(Base):
     weekday = Column(ENUM(WeekDayEnum), nullable=False)
 
     event_groups = relationship("EventGroup", back_populates="events")
+    attendance = relationship("Attendance", back_populates="events")
 
 
 class Attendance(Base):
@@ -120,8 +120,8 @@ class Attendance(Base):
     attended = Column(Boolean)
     promised = Column(Boolean)
 
-    users = relationship("User", back_populates="attendance")
-    events = relationship("Event", back_populates="attendance")
+    users = relationship("User", back_populates="attendance", foreign_keys="Attendance.user")
+    events = relationship("Event", back_populates="attendance", foreign_keys="Attendance.event")
 
 
 class EventGroup(Base):
@@ -131,8 +131,8 @@ class EventGroup(Base):
     group = Column(UUID, ForeignKey("groups.id"))
     event = Column(UUID, ForeignKey("events.id"))
 
-    groups = relationship("Group", back_populates="group_events")
-    events = relationship("Event", back_populates="event_groups")
+    groups = relationship("Group", back_populates="group_events", foreign_keys="EventGroup.group")
+    events = relationship("Event", back_populates="event_groups", foreign_keys="EventGroup.event")
 
 
 class StatusEnum(Enum):
