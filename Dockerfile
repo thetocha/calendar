@@ -12,4 +12,6 @@ COPY .env /code/.env
 COPY alembic.ini /code/alembic.ini
 COPY config.py /code/config.py
 
+COPY create_db.sh /docker-entrypoint-initdb.d/
+
 EXPOSE 8033
