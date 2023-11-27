@@ -1,12 +1,14 @@
 from pydantic import BaseModel
 from uuid import UUID
 
+from app.group.schemas import CreateGroup
+
 
 class UserBase(BaseModel):
     first_name: str
     last_name: str
     username: str
-    group: int
+    group: CreateGroup
 
 
 class GetUser(UserBase):
