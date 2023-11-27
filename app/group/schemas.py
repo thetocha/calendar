@@ -27,10 +27,12 @@ class CreateUserGroupRole(BaseModel):
     group: GetGroup
     role: GetGroupRole
 
+    class Config:
+        from_attributes = True
+
 
 class GetUserGroupRole(CreateGroup):
     id: int
 
     class Config:
         from_attributes = True
-
