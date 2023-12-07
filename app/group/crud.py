@@ -1,6 +1,7 @@
+from uuid import UUID
 from sqlalchemy.orm import Session
-from app.group.schemas import CreateGroup, GetUserGroupRole, GetGroup, GetGroupRole
-from app.users.schemas import GetUser
+from app.group.schemas import CreateGroup, GetGroup, GetGroupRole
+from app.users.schemas import GetUser, GetUserGroupRole
 from app.users.models import Group, UserGroupRole, GroupRole
 
 
@@ -12,11 +13,15 @@ def create_group(group: CreateGroup, session: Session):
 
 
 def get_group(group: CreateGroup, session: Session):
-    return session.query(Group).filter(Group.number == group.number).filter(Group.course == group.course).first()
+    return session.query(Group).filter(Group.number == group.number, Group.course == group.course).first()
+
+
+def get_group_by_id(id: UUID, session):
+    return session.query(Group).filter(Group.id == id).first()
 
 
 def delete_group(group: GetGroup, session: Session):
-    group_to_delete = Group(**group.dict())
+    group_to_delete = get_group_by_id(group.id, session)
     session.delete(group_to_delete)
     session.commit()
     return {"Group": "Deleted"}
@@ -59,4 +64,3 @@ def update_role(user: GetUser, role: GetGroupRole, session: Session):
     update_query.update(user_group_role)
     session.commit()
     return user_group_role
-

@@ -1,12 +1,11 @@
 from pydantic import BaseModel
 from uuid import UUID
-from enum import Enum
 
-from app.users.schemas import GetUser
+from app.users.models import CourseEnum
 
 
 class CreateGroup(BaseModel):
-    course: Enum
+    course: CourseEnum
     number: int
 
 
@@ -20,19 +19,3 @@ class GetGroup(CreateGroup):
 class GetGroupRole(BaseModel):
     id: int
     role_name: str
-
-
-class CreateUserGroupRole(BaseModel):
-    user: GetUser
-    group: GetGroup
-    role: GetGroupRole
-
-    class Config:
-        from_attributes = True
-
-
-class GetUserGroupRole(CreateGroup):
-    id: int
-
-    class Config:
-        from_attributes = True
