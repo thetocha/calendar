@@ -57,34 +57,14 @@ class User(Base):
     attendance = relationship("Attendance", back_populates="users")
 
 
-# class Role(Base):
-#     __tablename__ = "roles"
-#
-#     id = Column(Integer, primary_key=True, index=True)
-#     role_name = Column(ENUM(RoleEnum), nullable=False)
-#
-#     user_roles = relationship("UserRole", back_populates="roles")
-
-
 class UserRole(Base):
     __tablename__ = "user_roles"
 
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(UUID, ForeignKey("users.id"))
     role = Column(ENUM(RoleEnum), nullable=False)
-    # role_id = Column(Integer, ForeignKey("roles.id"))
 
     general_users = relationship("User", back_populates="user_roles", foreign_keys="UserRole.user_id")
-    # roles = relationship("Role", back_populates="user_roles", foreign_keys="UserRole.role_id")
-
-
-# class GroupRole(Base):
-#     __tablename__ = "group_roles"
-#
-#     id = Column(Integer, primary_key=True, index=True)
-#     role_name = Column(ENUM(GropeRoleEnum), nullable=False)
-#
-#     user_group_roles = relationship("UserGroupRole", back_populates="group_roles")
 
 
 class UserGroupRole(Base):

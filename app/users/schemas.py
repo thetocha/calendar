@@ -9,7 +9,6 @@ class UserBase(BaseModel):
     first_name: str
     last_name: str
     username: str
-    # group: CreateGroup
 
 
 class GetUser(UserBase):
