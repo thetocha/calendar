@@ -24,21 +24,21 @@ def delete_group(group: GetGroup, session: Session):
     group_to_delete = get_group_by_id(group.id, session)
     session.delete(group_to_delete)
     session.commit()
-    return {"Group": "Deleted"}
+    return group_to_delete
 
 
 def add_user_to_group(user_group_role: CreateUserGroupRole, session: Session):
     new_user = UserGroupRole(**user_group_role.dict())
     session.add(new_user)
     session.commit()
-    return {"User": "Added to group"}
+    return user_group_role.dict()
 
 
 def delete_user_from_group(user_group_role: GetUserGroupRole, session: Session):
     user_group_role_to_delete = session.query(UserGroupRole).filter(UserGroupRole.id == user_group_role.id).first()
     session.delete(user_group_role_to_delete)
     session.commit()
-    return {"Group": "Deleted from Group"}
+    return user_group_role_to_delete
 
 
 def get_user_group_role(user: GetUser, session: Session) -> GetUserGroupRole:
@@ -62,4 +62,4 @@ def update_role(user: GetUser, role: GroupRoleEnum, session: Session):
     }
     update_query.update(new_data)
     session.commit()
-    return {"Role": "Updated"}
+    return new_data
