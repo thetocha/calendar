@@ -14,8 +14,3 @@ class GetGroup(CreateGroup):
 
     class Config:
         from_attributes = True
-
-
-class GetGroupRole(BaseModel):
-    id: int
-    role_name: str

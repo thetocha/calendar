@@ -1,7 +1,8 @@
 from pydantic import BaseModel
 from uuid import UUID
 
-from app.group.schemas import CreateGroup, GetGroup, GetGroupRole
+from app.group.schemas import CreateGroup, GetGroup
+from app.users.models import GroupRoleEnum
 
 
 class UserBase(BaseModel):
@@ -26,9 +27,9 @@ class CreateUser(UserBase):
 
 
 class CreateUserGroupRole(BaseModel):
-    user: GetUser
-    group: GetGroup
-    role: GetGroupRole
+    user_id: UUID
+    group_id: UUID
+    role: GroupRoleEnum
 
     class Config:
         from_attributes = True
