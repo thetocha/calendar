@@ -74,10 +74,8 @@ class UserGroupRole(Base):
     user_id = Column(UUID, ForeignKey("users.id"))
     group_id = Column(UUID, ForeignKey("groups.id"))
     role = Column(ENUM(GroupRoleEnum), nullable=False)
-    # role_id = Column(Integer, ForeignKey("group_roles.id"))
 
     groups = relationship("Group", back_populates="group_roles", foreign_keys="UserGroupRole.group_id")
-    # group_roles = relationship("GroupRole", back_populates="user_group_roles", foreign_keys="UserGroupRole.role_id")
     users = relationship("User", back_populates="user_group_roles", foreign_keys="UserGroupRole.user_id")
 
 
