@@ -42,6 +42,7 @@ class GroupRoleEnum(str, Enum):
     DEFAULT_STUDENT = "default_student"
 
 
+
 class User(Base):
     __tablename__ = "users"
 
