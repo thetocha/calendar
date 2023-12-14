@@ -8,26 +8,39 @@ from enum import Enum
 from app.database import Base
 
 
-class CourseEnum(Enum):
-    first = "First"
-    second = "Second"
-    third = "Third"
-    forth = "Forth"
+class CourseEnum(str, Enum):
+    FIRST = "first"
+    SECOND = "second"
+    THIRD = "third"
+    FORTH = "forth"
 
 
-class WeekDayEnum(Enum):
-    monday = "Monday"
-    tuesday = "Tuesday"
-    wednesday = "Wednesday"
-    thursday = "Thursday"
-    friday = "Friday"
-    saturday = "Saturday"
-    sunday = "Sunday"
+class WeekDayEnum(str, Enum):
+    MONDAY = "monday"
+    TUESDAY = "tuesday"
+    WEDNESDAY = "wednesday"
+    THURSDAY = "thursday"
+    FRIDAY = "friday"
+    SATURDAY = "saturday"
+    SUNDAY = "sunday"
 
 
-class WeekEnum(Enum):
-    odd = "Odd"
-    even = "Even"
+class WeekEnum(str, Enum):
+    ODD = "odd"
+    EVEN = "even"
+
+
+class RoleEnum(str, Enum):
+    ADMINISTRATOR = "administrator"
+    MANAGER = "manager"
+    DEFAULT_USER = "default_user"
+
+
+class GroupRoleEnum(str, Enum):
+    SUPER_ADMIN = "super_admin"
+    ADMIN = "admin"
+    DEFAULT_STUDENT = "default_student"
+
 
 
 class User(Base):
@@ -45,33 +58,14 @@ class User(Base):
     attendance = relationship("Attendance", back_populates="users")
 
 
-class Role(Base):
-    __tablename__ = "roles"
-
-    id = Column(Integer, primary_key=True, index=True)
-    role_name = Column(String(20), nullable=False)
-
-    user_roles = relationship("UserRole", back_populates="roles")
-
-
 class UserRole(Base):
     __tablename__ = "user_roles"
 
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(UUID, ForeignKey("users.id"))
-    role_id = Column(Integer, ForeignKey("roles.id"))
+    role = Column(ENUM(RoleEnum), nullable=False)
 
     general_users = relationship("User", back_populates="user_roles", foreign_keys="UserRole.user_id")
-    roles = relationship("Role", back_populates="user_roles", foreign_keys="UserRole.role_id")
-
-
-class GroupRole(Base):
-    __tablename__ = "group_roles"
-
-    id = Column(Integer, primary_key=True, index=True)
-    role_name = Column(String(100), nullable=False)
-
-    user_group_roles = relationship("UserGroupRole", back_populates="group_roles")
 
 
 class UserGroupRole(Base):
@@ -80,10 +74,9 @@ class UserGroupRole(Base):
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(UUID, ForeignKey("users.id"))
     group_id = Column(UUID, ForeignKey("groups.id"))
-    role_id = Column(Integer, ForeignKey("group_roles.id"))
+    role = Column(ENUM(GroupRoleEnum), nullable=False)
 
     groups = relationship("Group", back_populates="group_roles", foreign_keys="UserGroupRole.group_id")
-    group_roles = relationship("GroupRole", back_populates="user_group_roles", foreign_keys="UserGroupRole.role_id")
     users = relationship("User", back_populates="user_group_roles", foreign_keys="UserGroupRole.user_id")
 
 

@@ -1,8 +1,9 @@
 """1_initial
 
-Revision ID: 6053694efbb2
+
+Revision ID: 14575d2b4504
 Revises: 
-Create Date: 2023-11-22 08:26:23.250291
+Create Date: 2023-12-08 06:37:07.459967
 
 """
 from typing import Sequence, Union
@@ -12,7 +13,8 @@ import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
 
 # revision identifiers, used by Alembic.
-revision: str = '6053694efbb2'
+
+revision: str = '14575d2b4504'
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -24,30 +26,18 @@ def upgrade() -> None:
     sa.Column('id', sa.UUID(), nullable=False),
     sa.Column('professor', sa.String(length=30), nullable=True),
     sa.Column('place', sa.String(length=20), nullable=True),
-    sa.Column('week', postgresql.ENUM('odd', 'even', name='weekenum'), nullable=False),
-    sa.Column('weekday', postgresql.ENUM('monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday', name='weekdayenum'), nullable=False),
+    sa.Column('week', postgresql.ENUM('ODD', 'EVEN', name='weekenum'), nullable=False),
+    sa.Column('weekday', postgresql.ENUM('MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY', 'SUNDAY', name='weekdayenum'), nullable=False),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_index(op.f('ix_events_id'), 'events', ['id'], unique=False)
-    op.create_table('group_roles',
-    sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('role_name', sa.String(length=100), nullable=False),
-    sa.PrimaryKeyConstraint('id')
-    )
-    op.create_index(op.f('ix_group_roles_id'), 'group_roles', ['id'], unique=False)
     op.create_table('groups',
     sa.Column('id', sa.UUID(), nullable=False),
     sa.Column('number', sa.Integer(), nullable=False),
-    sa.Column('course', postgresql.ENUM('first', 'second', 'third', 'forth', name='courseenum'), nullable=False),
+    sa.Column('course', postgresql.ENUM('FIRST', 'SECOND', 'THIRD', 'FORTH', name='courseenum'), nullable=False),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_index(op.f('ix_groups_id'), 'groups', ['id'], unique=False)
-    op.create_table('roles',
-    sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('role_name', sa.String(length=20), nullable=False),
-    sa.PrimaryKeyConstraint('id')
-    )
-    op.create_index(op.f('ix_roles_id'), 'roles', ['id'], unique=False)
     op.create_table('users',
     sa.Column('id', sa.UUID(), nullable=False),
     sa.Column('first_name', sa.String(length=100), nullable=True),
@@ -92,9 +82,8 @@ def upgrade() -> None:
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('user_id', sa.UUID(), nullable=True),
     sa.Column('group_id', sa.UUID(), nullable=True),
-    sa.Column('role_id', sa.Integer(), nullable=True),
+    sa.Column('role', postgresql.ENUM('SUPER_ADMIN', 'ADMIN', 'DEFAULT_STUDENT', name='groperoleenum'), nullable=False),
     sa.ForeignKeyConstraint(['group_id'], ['groups.id'], ),
-    sa.ForeignKeyConstraint(['role_id'], ['group_roles.id'], ),
     sa.ForeignKeyConstraint(['user_id'], ['users.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
@@ -102,8 +91,7 @@ def upgrade() -> None:
     op.create_table('user_roles',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('user_id', sa.UUID(), nullable=True),
-    sa.Column('role_id', sa.Integer(), nullable=True),
-    sa.ForeignKeyConstraint(['role_id'], ['roles.id'], ),
+    sa.Column('role', postgresql.ENUM('ADMINISTRATOR', 'MANAGER', 'DEFAULT_USER', name='roleenum'), nullable=False),
     sa.ForeignKeyConstraint(['user_id'], ['users.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
@@ -125,12 +113,8 @@ def downgrade() -> None:
     op.drop_table('attendance')
     op.drop_index(op.f('ix_users_id'), table_name='users')
     op.drop_table('users')
-    op.drop_index(op.f('ix_roles_id'), table_name='roles')
-    op.drop_table('roles')
     op.drop_index(op.f('ix_groups_id'), table_name='groups')
     op.drop_table('groups')
-    op.drop_index(op.f('ix_group_roles_id'), table_name='group_roles')
-    op.drop_table('group_roles')
     op.drop_index(op.f('ix_events_id'), table_name='events')
     op.drop_table('events')
     # ### end Alembic commands ###
