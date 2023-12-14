@@ -42,7 +42,6 @@ class GroupRoleEnum(str, Enum):
     DEFAULT_STUDENT = "default_student"
 
 
-
 class User(Base):
     __tablename__ = "users"
 
@@ -129,10 +128,10 @@ class EventGroup(Base):
 
 
 class StatusEnum(Enum):
-    sent = "Sent"
-    not_sent = "Not Sent"
-    error = "Error"
-    sending = "Sending"
+    SENT = "Sent"
+    NOT_SENT = "Not Sent"
+    ERROR = "Error"
+    SENDING = "Sending"
 
 
 class Notification(Base):

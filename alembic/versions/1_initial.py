@@ -1,9 +1,8 @@
 """1_initial
 
-
-Revision ID: 14575d2b4504
-Revises: 
-Create Date: 2023-12-08 06:37:07.459967
+Revision ID: 5e80fd42117d
+Revises: 14575d2b4504
+Create Date: 2023-12-14 08:05:16.216627
 
 """
 from typing import Sequence, Union
@@ -13,9 +12,8 @@ import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
 
 # revision identifiers, used by Alembic.
-
-revision: str = '14575d2b4504'
-down_revision: Union[str, None] = None
+revision: str = '5e80fd42117d'
+down_revision: Union[str, None] = '14575d2b4504'
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
@@ -72,7 +70,7 @@ def upgrade() -> None:
     sa.Column('id', sa.UUID(), nullable=False),
     sa.Column('text', sa.String(length=1000), nullable=False),
     sa.Column('creation_date', sa.DateTime(), nullable=False),
-    sa.Column('status', postgresql.ENUM('sent', 'not_sent', 'error', 'sending', name='statusenum'), nullable=False),
+    sa.Column('status', postgresql.ENUM('SENT', 'NOT_SENT', 'ERROR', 'SENDING', name='statusenum'), nullable=False),
     sa.Column('user', sa.UUID(), nullable=True),
     sa.ForeignKeyConstraint(['user'], ['users.id'], ),
     sa.PrimaryKeyConstraint('id')
@@ -82,7 +80,7 @@ def upgrade() -> None:
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('user_id', sa.UUID(), nullable=True),
     sa.Column('group_id', sa.UUID(), nullable=True),
-    sa.Column('role', postgresql.ENUM('SUPER_ADMIN', 'ADMIN', 'DEFAULT_STUDENT', name='groperoleenum'), nullable=False),
+    sa.Column('role', postgresql.ENUM('SUPER_ADMIN', 'ADMIN', 'DEFAULT_STUDENT', name='grouproleenum'), nullable=False),
     sa.ForeignKeyConstraint(['group_id'], ['groups.id'], ),
     sa.ForeignKeyConstraint(['user_id'], ['users.id'], ),
     sa.PrimaryKeyConstraint('id')
