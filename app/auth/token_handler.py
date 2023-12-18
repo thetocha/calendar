@@ -8,7 +8,8 @@ from uuid import UUID
 from config import jwt_settings
 from app.auth.schemas import TokenData
 from app.database import get_session
-from app.users.crud import get_user
+from app.users.crud import UserCrud
+from app.users.schemas import GetUser
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl='/login')
 
@@ -45,8 +46,13 @@ def get_current_user_details(token: str = Depends(oauth2_scheme), session: Sessi
 
     token = verify_token_access(token, credentials_exception)
 
-    user = get_user(user_id=token.user_id, session=session)
+    crud = UserCrud(session)
+    user = crud.get_user(user_id=token.user_id)
     if user is None:
         raise HTTPException(status_code=404, detail="User not found")
 
     return user
+
+
+def get_current_user_role(user: GetUser = Depends(get_current_user_details)):
+    return user.role

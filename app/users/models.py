@@ -3,6 +3,7 @@ import uuid
 from sqlalchemy import Column, Integer, String, ForeignKey, Boolean, DateTime
 from sqlalchemy.orm import relationship
 from sqlalchemy.dialects.postgresql import UUID, ENUM
+from sqlalchemy.types import TIME
 from enum import Enum
 
 from app.database import Base
@@ -50,21 +51,11 @@ class User(Base):
     last_name = Column(String(100), nullable=False)
     username = Column(String(100), nullable=False, unique=True)
     password = Column(String(1000), nullable=False)
+    role = Column(ENUM(RoleEnum), nullable=False)
 
-    user_roles = relationship("UserRole", back_populates="general_users")
     user_group_roles = relationship("UserGroupRole", back_populates="users")
     notifications = relationship("Notification", back_populates="users")
     attendance = relationship("Attendance", back_populates="users")
-
-
-class UserRole(Base):
-    __tablename__ = "user_roles"
-
-    id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(UUID, ForeignKey("users.id"))
-    role = Column(ENUM(RoleEnum), nullable=False)
-
-    general_users = relationship("User", back_populates="user_roles", foreign_keys="UserRole.user_id")
 
 
 class UserGroupRole(Base):
@@ -98,6 +89,7 @@ class Event(Base):
     place = Column(String(20))
     week = Column(ENUM(WeekEnum), nullable=False)
     weekday = Column(ENUM(WeekDayEnum), nullable=False)
+    time = Column(TIME, nullable=False)
 
     event_groups = relationship("EventGroup", back_populates="events")
     attendance = relationship("Attendance", back_populates="events")
