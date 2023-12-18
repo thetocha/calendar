@@ -3,6 +3,7 @@ import uuid
 from sqlalchemy import Column, Integer, String, ForeignKey, Boolean, DateTime
 from sqlalchemy.orm import relationship
 from sqlalchemy.dialects.postgresql import UUID, ENUM
+from sqlalchemy.types import TIME
 from enum import Enum
 
 from app.database import Base
@@ -98,6 +99,7 @@ class Event(Base):
     place = Column(String(20))
     week = Column(ENUM(WeekEnum), nullable=False)
     weekday = Column(ENUM(WeekDayEnum), nullable=False)
+    time = Column(TIME, nullable=False)
 
     event_groups = relationship("EventGroup", back_populates="events")
     attendance = relationship("Attendance", back_populates="events")

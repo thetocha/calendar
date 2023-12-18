@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
+from uuid import UUID
 
 from app.group.crud import GroupCrud
 from app.database import get_session
@@ -19,6 +20,18 @@ def create_group_endpoint(group: CreateGroup, session: Session = Depends(get_ses
     if db_group:
         raise HTTPException(status_code=400, detail="Group already registered")
     return crud.create_group(group)
+
+
+@group_router.get("/get_group/{group_id}")
+def get_group_endpoint(group_id: UUID, session: Session = Depends(get_session)):
+    crud = GroupCrud(session)
+    return crud.get_group_by_id(group_id)
+
+
+@group_router.get("/get_all_groups")
+def get_all_groups_endpoint(session: Session = Depends(get_session), skip: int = 0, limit: int = 100):
+    crud = GroupCrud(session)
+    return crud.get_all_groups(skip, limit)
 
 
 @group_router.delete("/delete_group")

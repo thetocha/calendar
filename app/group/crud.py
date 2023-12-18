@@ -20,6 +20,9 @@ class GroupCrud:
     def get_group_by_id(self, id: UUID):
         return self.session.query(Group).filter(Group.id == id).first()
 
+    def get_all_groups(self, skip: int = 0, limit: int = 100):
+        return self.session.query(Group).offset(skip).limit(limit).all()
+
     def delete_group(self, group: GetGroup):
         group_to_delete = self.get_group_by_id(group.id)
         self.session.delete(group_to_delete)
