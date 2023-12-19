@@ -51,21 +51,22 @@ class User(Base):
     last_name = Column(String(100), nullable=False)
     username = Column(String(100), nullable=False, unique=True)
     password = Column(String(1000), nullable=False)
+    role = Column(ENUM(RoleEnum), nullable=False)
 
-    user_roles = relationship("UserRole", back_populates="general_users")
+    # user_roles = relationship("UserRole", back_populates="general_users")
     user_group_roles = relationship("UserGroupRole", back_populates="users")
     notifications = relationship("Notification", back_populates="users")
     attendance = relationship("Attendance", back_populates="users")
 
 
-class UserRole(Base):
-    __tablename__ = "user_roles"
-
-    id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(UUID, ForeignKey("users.id"))
-    role = Column(ENUM(RoleEnum), nullable=False)
-
-    general_users = relationship("User", back_populates="user_roles", foreign_keys="UserRole.user_id")
+# class UserRole(Base):
+#     __tablename__ = "user_roles"
+#
+#     id = Column(Integer, primary_key=True, index=True)
+#     user_id = Column(UUID, ForeignKey("users.id"))
+#     role = Column(ENUM(RoleEnum), nullable=False)
+#
+#     general_users = relationship("User", back_populates="user_roles", foreign_keys="UserRole.user_id")
 
 
 class UserGroupRole(Base):

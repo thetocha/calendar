@@ -5,7 +5,7 @@ from uuid import UUID
 from app.group.crud import GroupCrud
 from app.database import get_session
 from app.users.schemas import GetUser, CreateUserGroupRole
-from app.users.models import GroupRoleEnum
+from app.users.models import GroupRoleEnum, RoleEnum
 from app.auth.token_handler import get_current_user_details
 from app.group.schemas import CreateGroup, GetGroup
 from app.users.crud import get_user_by_username
@@ -13,8 +13,11 @@ from app.users.crud import get_user_by_username
 group_router = APIRouter(tags=["Group"])
 
 
-@group_router.post("/create_group", response_model=CreateGroup)
-def create_group_endpoint(group: CreateGroup, session: Session = Depends(get_session)):
+@group_router.post("/create_group", response_model=CreateGroup,)
+def create_group_endpoint(group: CreateGroup, session: Session = Depends(get_session),
+                          user: GetUser = Depends(get_current_user_details)):
+    if user.role is not RoleEnum.ADMINISTRATOR:
+        raise HTTPException(status_code=403, detail="You have no rights for this")
     crud = GroupCrud(session)
     db_group = crud.get_group(group)
     if db_group:
@@ -35,7 +38,10 @@ def get_all_groups_endpoint(session: Session = Depends(get_session), skip: int =
 
 
 @group_router.delete("/delete_group")
-def delete_group_endpoint(group: GetGroup, session: Session = Depends(get_session)):
+def delete_group_endpoint(group: GetGroup, session: Session = Depends(get_session),
+                          user: GetUser = Depends(get_current_user_details)):
+    if user.role is not RoleEnum.ADMINISTRATOR:
+        raise HTTPException(status_code=403, detail="You have no rights for this")
     crud = GroupCrud(session)
     return crud.delete_group(group)
 
@@ -68,7 +74,10 @@ def delete_user_from_group_endpoint(user: GetUser = Depends(get_current_user_det
 
 
 @group_router.put("/assign_new_group_role_to_user")
-def update_group_role_endpoint(username: str, new_role: GroupRoleEnum, session: Session = Depends(get_session)):
+def update_group_role_endpoint(username: str, new_role: GroupRoleEnum, session: Session = Depends(get_session),
+                               user: GetUser = Depends(get_current_user_details)):
+    if user.role is RoleEnum.DEFAULT_USER:
+        raise HTTPException(status_code=403, detail="You have no rights for this")
     user = get_user_by_username(username=username, session=session)
     crud = GroupCrud(session)
     user_group_role = crud.get_user_group_role(user)
