@@ -7,17 +7,16 @@ from app.event.schemas import CreateEvent, GetEvent
 from app.group.schemas import GetGroup
 from app.event.crud import EventCrud
 from app.group.crud import GroupCrud
-from app.users.schemas import GetUser
 from app.users.models import RoleEnum
-from app.auth.token_handler import get_current_user_details
+from app.auth.token_handler import get_current_user_role
 
 event_router = APIRouter(tags=["Event"])
 
 
 @event_router.post("/create_event", response_model=CreateEvent)
 def create_event_endpoint(event: CreateEvent, session: Session = Depends(get_session),
-                          user: GetUser = Depends(get_current_user_details)):
-    if user.role is not RoleEnum.ADMINISTRATOR:
+                          role: RoleEnum = Depends(get_current_user_role)):
+    if role is not RoleEnum.ADMINISTRATOR:
         raise HTTPException(status_code=403, detail="You have no rights for this")
     crud = EventCrud(session)
     db_event = crud.get_event_by_description(event)
@@ -28,8 +27,8 @@ def create_event_endpoint(event: CreateEvent, session: Session = Depends(get_ses
 
 @event_router.delete("/delete_event")
 def delete_event_endpoint(event: GetEvent, session: Session = Depends(get_session),
-                          user: GetUser = Depends(get_current_user_details)):
-    if user.role is not RoleEnum.ADMINISTRATOR:
+                          role: RoleEnum = Depends(get_current_user_role)):
+    if role is not RoleEnum.ADMINISTRATOR:
         raise HTTPException(status_code=403, detail="You have no rights for this")
     crud = EventCrud(session)
     db_event = crud.get_event_by_id(event.id)
@@ -40,8 +39,8 @@ def delete_event_endpoint(event: GetEvent, session: Session = Depends(get_sessio
 
 @event_router.put("/update_event")
 def update_event_endpoint(event: GetEvent, session: Session = Depends(get_session),
-                          user: GetUser = Depends(get_current_user_details)):
-    if user.role is not RoleEnum.ADMINISTRATOR:
+                          role: RoleEnum = Depends(get_current_user_role)):
+    if role is not RoleEnum.ADMINISTRATOR:
         raise HTTPException(status_code=403, detail="You have no rights for this")
     crud = EventCrud(session)
     if not crud.get_event_by_id(event.id):
@@ -66,8 +65,8 @@ def get_all_event_endpoint(session: Session = Depends(get_session), skip: int = 
 
 @event_router.post("/add_event_to_groups")
 def add_event_to_groups_endpoint(groups: list[GetGroup], event: GetEvent, session: Session = Depends(get_session),
-                                 user: GetUser = Depends(get_current_user_details)):
-    if user.role is RoleEnum.DEFAULT_USER:
+                                 role: RoleEnum = Depends(get_current_user_role)):
+    if role is RoleEnum.DEFAULT_USER:
         raise HTTPException(status_code=403, detail="You have no rights for this")
     event_crud = EventCrud(session)
     result = []
@@ -83,8 +82,8 @@ def add_event_to_groups_endpoint(groups: list[GetGroup], event: GetEvent, sessio
 
 @event_router.delete("/delete_groups_from_event")
 def delete_groups_from_event_endpoint(groups: list[GetGroup], event: GetEvent, session: Session = Depends(get_session),
-                                      user: GetUser = Depends(get_current_user_details)):
-    if user.role is RoleEnum.DEFAULT_USER:
+                                      role: RoleEnum = Depends(get_current_user_role)):
+    if role is RoleEnum.DEFAULT_USER:
         raise HTTPException(status_code=403, detail="You have no rights for this")
     crud = EventCrud(session)
     result = []
@@ -107,8 +106,8 @@ def get_all_events_of_group_endpoint(group_id: UUID, session: Session = Depends(
 
 @event_router.post("/add_events_to_group")
 def add_events_to_group_endpoint(group: GetGroup, events: list[GetEvent], session: Session = Depends(get_session),
-                                 user: GetUser = Depends(get_current_user_details)):
-    if user.role is RoleEnum.DEFAULT_USER:
+                                 role: RoleEnum = Depends(get_current_user_role)):
+    if role is RoleEnum.DEFAULT_USER:
         raise HTTPException(status_code=403, detail="You have no rights for this")
     crud = EventCrud(session)
     result = []
@@ -121,8 +120,8 @@ def add_events_to_group_endpoint(group: GetGroup, events: list[GetEvent], sessio
 
 @event_router.delete("/delete_group_events")
 def delete_group_events_endpoint(group: GetGroup, events: list[GetEvent], session: Session = Depends(get_session),
-                                 user: GetUser = Depends(get_current_user_details)):
-    if user.role is RoleEnum.DEFAULT_USER:
+                                 role: RoleEnum = Depends(get_current_user_role)):
+    if role is RoleEnum.DEFAULT_USER:
         raise HTTPException(status_code=403, detail="You have no rights for this")
     crud = EventCrud(session)
     result = []
