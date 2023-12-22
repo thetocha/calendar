@@ -78,10 +78,18 @@ def update_group_role_endpoint(username: str, new_role: GroupRoleEnum, session: 
                                role: RoleEnum = Depends(get_current_user_role)):
     if role is RoleEnum.DEFAULT_USER:
         raise HTTPException(status_code=403, detail="You have no rights for this")
-    crud = UserCrud(session)
-    user = crud.get_user_by_username(username=username)
+    user_crud = UserCrud(session)
+    user = user_crud.get_user_by_username(username=username)
     crud = GroupCrud(session)
     user_group_role = crud.get_user_group_role(user)
     if not user_group_role:
         raise HTTPException(status_code=400, detail="User does not belong to any group")
     return crud.update_role(user=user, role=new_role)
+
+
+@group_router.get("/get_all_group_users/{group_id}")
+def get_all_group_users(group_id: UUID, session: Session = Depends(get_session)):
+    crud = GroupCrud(session)
+    if not crud.get_group_by_id(group_id):
+        raise HTTPException(status_code=404, detail="No such group")
+    return crud.get_all_group_user(group_id)

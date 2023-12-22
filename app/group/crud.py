@@ -47,7 +47,9 @@ class GroupCrud:
 
     def get_user_group(self, user: GetUser):
         user_group_role = self.get_user_group_role(user)
-        return self.session.query(Group).filter(Group.id == user_group_role.group.id).first()
+        if not user_group_role:
+            return None
+        return self.session.query(Group).filter(Group.id == user_group_role.group_id).first()
 
     def update_role(self, user: GetUser, role: GroupRoleEnum):
         update_query = self.session.query(UserGroupRole).filter(UserGroupRole.user_id == user.id)
@@ -62,3 +64,18 @@ class GroupCrud:
         update_query.update(new_data)
         self.session.commit()
         return new_data
+
+    def get_all_group_user(self, group_id: UUID):
+        return self.session.query(UserGroupRole).filter(UserGroupRole.group_id == group_id).all()
+
+    def get_user_role(self, user: GetUser):
+        db_user = self.get_user_group_role(user)
+        if not db_user:
+            return None
+        return db_user.role
+
+    def get_user_group_by_id(self, user_id: UUID):
+        user = self.session.query(UserGroupRole).filter(UserGroupRole.user_id == user_id).first()
+        if not user:
+            return None
+        return user.group_id
