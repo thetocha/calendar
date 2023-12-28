@@ -48,6 +48,9 @@ class AttendanceCrud:
     def get_event_attendance(self, event_id: UUID):
         return self.session.query(Attendance).filter(Attendance.event == event_id).all()
 
+    def get_user_event_attendance(self, user: UUID, event: UUID):
+        return self.session.query(Attendance).filter(Attendance.event == event, Attendance.user == user).first()
+
     def update_promised(self, attendance_id: UUID, new_promised: bool):
         update_query = self.session.query(Attendance).filter(Attendance.id == attendance_id)
         attendance = update_query.first()

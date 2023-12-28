@@ -6,8 +6,7 @@ from sqlalchemy.orm import Session
 from app.users.crud import UserCrud
 from app.users.schemas import CreateUser, GetUser
 from app.auth.password_handler import get_hashed_password
-from app.users.models import RoleEnum
-from app.auth.token_handler import get_current_user_role
+from app.auth.token_handler import verify_is_administrator
 
 user_router = APIRouter(tags=["User"])
 
@@ -38,23 +37,17 @@ def read_user(username: str, session: Session = Depends(get_session)):
     return db_user
 
 
-@user_router.put('/update_user', response_model=CreateUser)
-def update_user(user_details: CreateUser, id_to_update: UUID, session: Session = Depends(get_session),
-                role: RoleEnum = Depends(get_current_user_role)):
-    if role is not RoleEnum.ADMINISTRATOR:
-        raise HTTPException(status_code=403, detail="You have no rights for this")
+@user_router.put('/update_user', response_model=CreateUser, dependencies=[Depends(verify_is_administrator)])
+def update_user(user_details: CreateUser, id_to_update: UUID, session: Session = Depends(get_session)):
     user_details.password = get_hashed_password(user_details.password)
     crud = UserCrud(session)
     crud.update_user(user=user_details, id_to_update=id_to_update)
     return user_details
 
 
-@user_router.put('/delete_user', response_model=CreateUser)
-def delete_user(id_to_update: UUID, session: Session = Depends(get_session),
-                role: RoleEnum = Depends(get_current_user_role)):
+@user_router.put('/delete_user', response_model=CreateUser, dependencies=[Depends(verify_is_administrator)])
+def delete_user(id_to_update: UUID, session: Session = Depends(get_session)):
     crud = UserCrud(session)
-    if role is not RoleEnum.ADMINISTRATOR:
-        raise HTTPException(status_code=403, detail="You have no rights for this")
     if not crud.get_user(id_to_update):
         raise HTTPException(status_code=404, detail="No such user")
     return crud.delete_user(id_to_update)

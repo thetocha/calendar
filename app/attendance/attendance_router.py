@@ -3,11 +3,11 @@ from uuid import UUID
 from sqlalchemy.orm import Session
 
 from app.attendance.schemas import GetAttendance, CreateAttendance
+from app.users.models import RoleEnum, GroupRoleEnum
 from app.users.schemas import GetUser
 from app.attendance.crud import AttendanceCrud
-from app.users.models import RoleEnum, GroupRoleEnum
-from app.auth.token_handler import get_current_user_role, get_current_user_group_role, get_current_user_group, \
-    get_current_user_details
+from app.auth.token_handler import get_current_user_group, get_current_user_details, verify_is_administrator, \
+    get_current_user_role, get_current_user_group_role
 from app.users.crud import UserCrud
 from app.event.crud import EventCrud
 from app.group.crud import GroupCrud
@@ -36,15 +36,12 @@ def get_attendance(attendance_id: UUID, session: Session = Depends(get_session))
     crud = AttendanceCrud(session)
     db_attendance = crud.get_attendance_by_id(attendance_id)
     if not db_attendance:
-        raise HTTPException(status_code=404, detail="NO such attendance")
+        raise HTTPException(status_code=404, detail="No such attendance")
     return db_attendance
 
 
-@attendance_router.delete("/delete_attendance")
-def delete_attendance(attendance: GetAttendance, session: Session = Depends(get_session),
-                      role: RoleEnum = Depends(get_current_user_role)):
-    if role is not RoleEnum.ADMINISTRATOR:
-        raise HTTPException(status_code=403, detail="You have no rights for this")
+@attendance_router.delete("/delete_attendance", dependencies=[Depends(verify_is_administrator)])
+def delete_attendance(attendance: GetAttendance, session: Session = Depends(get_session)):
     crud = AttendanceCrud(session)
     db_attendance = crud.get_attendance(attendance)
     if not db_attendance:
@@ -95,8 +92,20 @@ def get_event_attendance(event_id: UUID, session: Session = Depends(get_session)
     event_crud = EventCrud(session)
     attendance_crud = AttendanceCrud(session)
     if not event_crud.get_event_by_id(event_id):
-        raise HTTPException(status_code=404, detail="No such user")
+        raise HTTPException(status_code=404, detail="No such event")
     return attendance_crud.get_event_attendance(event_id)
+
+
+@attendance_router.get("/get_user_event_attendance")
+def get_user_event_attendance(event: UUID, user: UUID, session: Session = Depends(get_session)):
+    attendance_crud = AttendanceCrud(session)
+    user_crud = UserCrud(session)
+    event_crud = EventCrud(session)
+    if not event_crud.get_event_by_id(event):
+        raise HTTPException(status_code=404, detail="No such event")
+    if not user_crud.get_user(user):
+        raise HTTPException(status_code=404, detail="No such user")
+    return attendance_crud.get_user_event_attendance(user, event)
 
 
 @attendance_router.get("/get_group_attendance/{group_id}")

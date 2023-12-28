@@ -5,8 +5,8 @@ from uuid import UUID
 class CreateAttendance(BaseModel):
     user: UUID
     event: UUID
-    attended: bool
-    promised: bool
+    attended: bool = True
+    promised: bool = True
 
 
 class GetAttendance(CreateAttendance):
