@@ -24,5 +24,21 @@ class JWTSettings(BaseSettings):
     access_token_expire_minutes: int
 
 
+class RedisSettings(BaseSettings):
+    redis_port: int
+    redis_url: str
+
+
+class EmailSettings(BaseSettings):
+    email_host: str
+    email_port: int
+    email_address: str
+    email_pass: str
+    admin_name: str
+    admin_address: str
+
+
 db_settings = DbSettings()
 jwt_settings = JWTSettings()
+redis_settings = RedisSettings()
+email_settings = EmailSettings()

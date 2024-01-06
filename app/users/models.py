@@ -50,6 +50,7 @@ class User(Base):
     first_name = Column(String(100))
     last_name = Column(String(100), nullable=False)
     username = Column(String(100), nullable=False, unique=True)
+    email = Column(String(100), nullable=False, unique=True)
     password = Column(String(1000), nullable=False)
     role = Column(ENUM(RoleEnum), nullable=False)
 
@@ -86,10 +87,12 @@ class Event(Base):
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, index=True)
     professor = Column(String(30))
+    name = Column(String(50), nullable=False)
     place = Column(String(20))
     week = Column(ENUM(WeekEnum), nullable=False)
     weekday = Column(ENUM(WeekDayEnum), nullable=False)
-    time = Column(TIME, nullable=False)
+    time = Column(TIME(timezone=True), nullable=False)
+    date = Column(DateTime(timezone=True), nullable=False)
 
     event_groups = relationship("EventGroup", back_populates="events")
     attendance = relationship("Attendance", back_populates="events")
@@ -103,6 +106,7 @@ class Attendance(Base):
     event = Column(UUID, ForeignKey("events.id"))
     attended = Column(Boolean)
     promised = Column(Boolean)
+    important_skip = Column(Boolean)
 
     users = relationship("User", back_populates="attendance", foreign_keys="Attendance.user")
     events = relationship("Event", back_populates="attendance", foreign_keys="Attendance.event")
@@ -131,7 +135,7 @@ class Notification(Base):
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, index=True)
     text = Column(String(1000), nullable=False)
-    creation_date = Column(DateTime, nullable=False)
+    creation_date = Column(DateTime(timezone=True), nullable=False)
     status = Column(ENUM(StatusEnum), nullable=False)
     user = Column(UUID, ForeignKey("users.id"))
 

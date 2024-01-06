@@ -1,6 +1,6 @@
 from enum import Enum
 
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr
 from uuid import UUID
 
 from app.group.schemas import CreateGroup
@@ -16,6 +16,7 @@ class Group(BaseModel):
 class UserBase(BaseModel):
     first_name: str
     last_name: str
+    email: EmailStr
     username: str
     role: RoleEnum
 

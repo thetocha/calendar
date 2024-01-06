@@ -1,14 +1,17 @@
 from sqlalchemy.orm import Session
 from app.users.models import User
 from app.users.schemas import CreateUser
+from app.database import get_session
 
 from uuid import UUID
 
 
 class UserCrud:
-
-    def __init__(self, session: Session):
-        self.session = session
+    def __init__(self, session):
+        if session:
+            self.session = session
+        else:
+            self.session = next(get_session())
 
     def get_user_by_username(self, username: str):
         return self.session.query(User).filter(User.username == username).first()

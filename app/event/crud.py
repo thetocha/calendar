@@ -1,12 +1,18 @@
+from sqlalchemy import extract
+
 from app.event.schemas import CreateEvent, GetEvent, GetEventGroup
 from app.users.models import Event, EventGroup
 from app.group.schemas import GetGroup
+from app.database import get_session
 from uuid import UUID
 
 
 class EventCrud:
     def __init__(self, session):
-        self.session = session
+        if session:
+            self.session = session
+        else:
+            self.session = next(get_session())
 
     def create_event(self, event: CreateEvent):
         new_event = Event(**event.dict())
@@ -63,3 +69,13 @@ class EventCrud:
 
     def get_all_group_events(self, group_id: UUID):
         return self.session.query(EventGroup).filter(EventGroup.group == group_id).all()
+
+    def get_all_group_events_for_month(self, group_id: UUID, month: int, year: int):
+        events = []
+        group_events = self.get_all_group_events(group_id)
+        for group_event in group_events:
+            event = self.session.query(Event).filter(Event.id == group_event.event).filter(
+                extract('month', Event.date) == month).filter(extract('year', Event.date) == year).first()
+            if event:
+                events.append(event)
+        return events

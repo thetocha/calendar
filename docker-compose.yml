@@ -2,32 +2,15 @@ version: "3.9"
 
 services:
   db:
-     image: postgres:16
-     container_name: db_server
-     restart: always
-     env_file:
-       - .env
-     ports:
-       - "${DB_PORT}:${APP_PORT}"
-     volumes:
-        - ./data:/var/lib/postgresql/data
-
-  app:
-      command:
-        bash -c "uvicorn app.main:app --host 0.0.0.0 --port 8033"
-      build:
-        context: .
-        dockerfile: Dockerfile
-      container_name: fastapi
-      env_file:
-        - .env
-      restart: always
-      volumes:
-        - .:/code
-      ports:
-          - "${APP_PORT}:${APP_PORT}"
-      depends_on:
-          - db
+    image: postgres:16
+    container_name: db_server
+    restart: always
+    env_file:
+      - .env
+    ports:
+      - "${DB_PORT}:${APP_PORT}"
+    volumes:
+      - ./data:/var/lib/postgresql/data
 
   pgadmin:
     container_name: pgadmin
@@ -39,6 +22,59 @@ services:
     depends_on:
       - db
 
+  redis:
+    image: redis
+    env_file:
+      - .env
+    ports:
+      - "${REDIS_PORT}:${REDIS_PORT}"
+
+  app:
+    command:
+      bash -c "uvicorn app.main:app --host 0.0.0.0 --port 8033"
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: fastapi
+    env_file:
+      - .env
+    restart: always
+    volumes:
+      - .:/code
+    ports:
+      - "${APP_PORT}:${APP_PORT}"
+    depends_on:
+      - db
+      - redis
+
+  celery_worker:
+    container_name: celery_worker
+    build: .
+    command: celery -A celery_app.celery_worker worker --pool=solo --loglevel=info -B
+    env_file:
+      - .env
+    volumes:
+      - .:/code
+    depends_on:
+      - redis
+      - app
+
+  flower:
+    image: mher/flower:0.9.7
+    container_name: flower
+    build: .
+    command: celery flower
+    env_file:
+      - .env
+    environment:
+      - CELERY_BROKER_URL=${REDIS_URL}
+      - FLOWER_PORT=${FLOWER_PORT}
+    ports:
+      - "${FLOWER_PORT}:${FLOWER_PORT}"
+    depends_on:
+      - app
+      - redis
+      - celery_worker
 
 networks:
   default:
